@@ -3,6 +3,7 @@ from combiner import Combiner
 from cadence import *
 from dotenv import load_dotenv
 from spotify import *
+from spotipy import oauth2
 import urllib.parse
 import os
 
@@ -24,6 +25,38 @@ spotify = SpotifyAPI(CLIENT_ID_SPOTIFY, CLIENT_SECRET_SPOTIFY, REDIRECT_URI_SPOT
 app = Flask(__name__)
 
 REDIRECT_URI_temp = 'https://hawkhacks2024.onrender.com/callback'
+
+#spotify authentication
+SCOPE = "user-library-read, user-modify-playback-state, user-read-playback-state, user-top-read, user-read-email, user-read-private, playlist-modify-public, playlist-modify-private"
+sp_oauth = oauth2.SpotifyOAuth( CLIENT_ID_SPOTIFY, CLIENT_SECRET_SPOTIFY,REDIRECT_URI_SPOTIFY,scope=SCOPE )
+
+@app.route('/')
+def index():
+
+    access_token = ""
+
+    token_info = sp_oauth.get_cached_token()
+
+    if token_info:
+        print ("Found cached token!")
+        access_token = token_info['access_token']
+    else:
+        url = request.url
+        code = sp_oauth.parse_response_code(url)
+        if code:
+            print ("Found Spotify auth code in Request URL! Trying to get valid access token...")
+            token_info = sp_oauth.get_access_token(code)
+            access_token = token_info['access_token']
+
+    if access_token:
+        print ("Access token available! Trying to get user information...")
+        sp = spotipy.Spotify(access_token)
+        results = sp.current_user()
+        return results
+
+    else:
+        return 'no access token could be gotten'
+
 
 # strava authentication
 @app.route('/login')
@@ -59,33 +92,33 @@ def callback():
 
     return jsonify(code)
 
-# spotify authentication
-@app.route('/loginspotify')
-def loginspotify():
-    SCOPE = "user-library-read, user-modify-playback-state, user-read-playback-state, user-top-read, user-read-email, user-read-private, playlist-modify-public, playlist-modify-private"
-    auth_url = f'https://accounts.spotify.com/authorize?response_type=code&client_id={CLIENT_ID_SPOTIFY}&scope={urllib.parse.quote(SCOPE)}&redirect_uri={REDIRECT_URI_SPOTIFY}'
-    return redirect(auth_url)
+# # spotify authentication
+# @app.route('/loginspotify')
+# def loginspotify():
+#     SCOPE = "user-library-read, user-modify-playback-state, user-read-playback-state, user-top-read, user-read-email, user-read-private, playlist-modify-public, playlist-modify-private"
+#     auth_url = f'https://accounts.spotify.com/authorize?response_type=code&client_id={CLIENT_ID_SPOTIFY}&scope={urllib.parse.quote(SCOPE)}&redirect_uri={REDIRECT_URI_SPOTIFY}'
+#     return redirect(auth_url)
 
-@app.route('/callbackspotify')
-def callbackspotify():
-    code = request.args.get('code')
-    if not code:
-        return 'Error: Authorization code not received'
+# @app.route('/callbackspotify')
+# def callbackspotify():
+#     code = request.args.get('code')
+#     if not code:
+#         return 'Error: Authorization code not received'
 
-    token_data = {
-        'grant_type': 'authorization_code',
-        'code': code,
-        'redirect_uri': REDIRECT_URI_SPOTIFY,
-        'client_id': CLIENT_ID_SPOTIFY,
-        'client_secret': CLIENT_SECRET_SPOTIFY
-    }
-    response = requests.post('https://accounts.spotify.com/api/token', data=token_data)
-    if response.status_code == 200:
-        access_token = response.json()['access_token']
-        session['access_token'] = access_token
-        return 'Authentication successful! You can now access the app.'
-    else:
-        return 'Error: Failed to retrieve access token'
+#     token_data = {
+#         'grant_type': 'authorization_code',
+#         'code': code,
+#         'redirect_uri': REDIRECT_URI_SPOTIFY,
+#         'client_id': CLIENT_ID_SPOTIFY,
+#         'client_secret': CLIENT_SECRET_SPOTIFY
+#     }
+#     response = requests.post('https://accounts.spotify.com/api/token', data=token_data)
+#     if response.status_code == 200:
+#         access_token = response.json()['access_token']
+#         session['access_token'] = access_token
+#         return 'Authentication successful! You can now access the app.'
+#     else:
+#         return 'Error: Failed to retrieve access token'
 
 
 
