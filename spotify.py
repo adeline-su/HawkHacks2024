@@ -177,6 +177,13 @@ class SpotifyAPI:
 
     def update_playback_state(self):
         playback_state = self.sp.current_playback()
+        if not playback_state:
+            self.device_id = None
+            self.device_is_active = False
+            self.playback_progress_sec = 0
+            self.is_playing = False
+            self.current_id = None
+            return
         self.device_id = playback_state['device']['id']
         self.device_is_active = playback_state['device']['is_active']
         self.playback_progress_sec = round(playback_state['progress_ms']/1000, 2)
@@ -186,25 +193,49 @@ class SpotifyAPI:
     # monitors for when to skip songs
     def monitor_playback(self):
 
-        while True:
-            self.update_playback_state()
+        self.update_playback_state()
+        song_change = False
+        last_song = self.current_id
 
+        while True:
             if self.is_playing:
                 result = self.sp.audio_analysis(self.current_id)
                 target_sections = self.get_loudness_drop_sections(result['sections'])
+                target_time = None
                 print(target_sections)
                 if target_sections:
-                    self.update_playback_state()
                     target_time = target_sections[0]['start']
                     print("target skip time", target_time)
-                    sleep_time = target_time - self.playback_progress_sec 
-                    print("sleeping", sleep_time)
+                    # sleep_time = target_time - self.playback_progress_sec 
+                    # print("sleeping", sleep_time)
 
-                    sleep(sleep_time)
-                    # self.update_playback_state()
-
-                    # if abs(self.playback_progress_sec - target_time) < 0.5:
-                    self.sp.next_track()
+                    # sleep(sleep_time)
+                    while target_time and not song_change:
+                        print("Inner loop")
+                        self.update_playback_state()
+                        if last_song != self.current_id:
+                            song_change = True
+                            last_song = self.current_id
+                        if abs(self.playback_progress_sec - target_time) < 0.5:
+                            self.sp.next_track()
+                            target_time = None
+                        elif abs(self.playback_progress_sec - target_time) > 10:
+                            print("sleeping 10")
+                            sleep(10)
+                        elif self.playback_progress_sec > target_time:
+                            break
+                else:
+                    # has no target sections, wait for next song to start
+                    til_end = round(self.sp.track(self.current_id)['duration_ms']/1000, 3) - self.playback_progress_sec 
+                    print(til_end)
+                    if abs(til_end) < 15:
+                        print(f"sleeping {til_end}")
+                        sleep(til_end)
+                    else:
+                        print("sleeping 10")
+                        sleep(10)
+                    self.update_playback_state()
+                
             
     # creates playlist with items added to queue and all songs played so far
     def create_playlist(self, playlist_name='My awesome running playlist'):
@@ -222,8 +253,10 @@ class SpotifyAPI:
     def get_playing_and_queue(self):
         return self.sp.queue()
     
-# spotify = SpotifyAPI()
-# spotify.readDataAndAuthenticate()
+spotify = SpotifyAPI()
+spotify.readDataAndAuthenticate()
+print(spotify.get_playing_and_queue())
+# spotify.monitor_playback()
 # spotify.get_top_songs_data()
 # spotify.add_to_queue()
 # spotify.create_playlist()
