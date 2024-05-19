@@ -54,15 +54,20 @@ def login():
 #follows from step 2
 @app.route('/callback')
 def callback():
+    print('adeline1')
     code = request.args.get('code')
+    print('adeline2')
 
     #strava auth
     strava.autheticateAndGetAllActivities(code)
+    print('adeline3')
     data = strava.getCadenceData(ActivityType.RUN)
 
+    print('adeline4')
     #combiner
     cb = Combiner(arrs=data)
     combined_list = cb.combine()
+    print('adeline5')
 
     # spotify
     spotify.readDataAndAuthenticate(combined_list)
