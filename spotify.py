@@ -41,7 +41,7 @@ class SpotifyAPI:
         self.sample_cadence_data = combined_list
 
         #authenticate
-        self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, redirect_uri=self.REDIRECT_URI, scope=self.SCOPE))
+        # self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, redirect_uri=self.REDIRECT_URI, scope=self.SCOPE))
 
         #populate seed_genre and seed_artist
         self.seed_artist.append(self.sp.current_user_top_artists(limit=1, offset=0, time_range='medium_term')['items'][0]['id'])

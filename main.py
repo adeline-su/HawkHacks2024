@@ -54,7 +54,12 @@ print(combined_list)
 print(len(cb.combine()))
 
 # spotify
+print(1)
 spotify = SpotifyAPI(CLIENT_ID_SPOTIFY, CLIENT_SECRET_SPOTIFY, REDIRECT_URI_SPOTIFY)
+print(2)
+
+spotify.auth()
+print(3)
 spotify.readDataAndAuthenticate(combined_list)
 spotify.get_top_songs_data()
 spotify.add_to_queue()

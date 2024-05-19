@@ -15,6 +15,7 @@ REDIRECT_URI_SPOTIFY=os.getenv('REDIRECT_URI_SPOTIFY')
 
 strava = StravaAPI(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 spotify = SpotifyAPI(CLIENT_ID_SPOTIFY, CLIENT_SECRET_SPOTIFY, REDIRECT_URI_SPOTIFY)
+spotify.auth()
 # print(spotify.CLIENT_ID_SPOTIFY, CLIENT_SECRET_SPOTIFY, REDIRECT_URI_SPOTIFY)
 # strava.autheticateAndGetAllActivities()
 # cadence_data = strava.getCadenceData()
@@ -85,12 +86,12 @@ def getRecent():
     return json
     # return jsonify("Troll")
 
-@app.route('/start', methods=['GET'])
-def start():
-    spotify.get_top_songs_data()
-    spotify.add_to_queue()
+# @app.route('/start', methods=['GET'])
+# def start():
+#     spotify.get_top_songs_data()
+#     spotify.add_to_queue()
 
-    return jsonify('started')
+#     return jsonify('started')
 
 @app.route('/playlist', methods=['GET'])
 def getPlaylist():
