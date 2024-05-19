@@ -2,6 +2,7 @@ from time import sleep
 import spotipy  
 from spotipy.oauth2 import SpotifyOAuth  
 import json
+import urllib.parse
 
 sample_cadence_data = []
 
@@ -37,6 +38,10 @@ class SpotifyAPI:
         print('adeline in auth')
 
         self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, redirect_uri=self.REDIRECT_URI, scope=self.SCOPE))
+        
+        a = f'https://accounts.spotify.com/authorize?response_type=code&client_id={self.CLIENT_ID}&scope={urllib.parse.quote(self.SCOPE)}&redirect_uri={self.REDIRECT_URI}'
+        print(a)
+
 
 
     def readDataAndAuthenticate(self, combined_list):

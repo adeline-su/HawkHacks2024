@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 from spotify import *
 import requests
 import webbrowser
+from spotipy import oauth2
+
+
 import os
 
 load_dotenv()
@@ -13,6 +16,20 @@ REDIRECT_URI = 'http://localhost:3000'
 CLIENT_ID_SPOTIFY='5c17cfd2c3884a6aa0b8d92d21ccf51e'
 CLIENT_SECRET_SPOTIFY='ce4bd0c559f149aeb281ecfd8d84da9b'
 REDIRECT_URI_SPOTIFY='http://localhost:3000/callback'
+
+SCOPE = "user-library-read, user-modify-playback-state, user-read-playback-state, user-top-read, user-read-email, user-read-private, playlist-modify-public, playlist-modify-private"
+sp_oauth = oauth2.SpotifyOAuth( CLIENT_ID_SPOTIFY, CLIENT_SECRET_SPOTIFY,REDIRECT_URI_SPOTIFY,scope=SCOPE )
+code = 'AQDXcEcgId827WW9f_yh1uig_Ka47eFu4nz2wfA5sgEioxduqBMKv_gCWt8e3jQ9C_Bm-lnUoIMgH7f27IUV8BTf1DfWErazHsHtWPbYEtwp1xgixIC2JfmD_Nmurj1N7KHsWEKNdyFbbuvy4VW2fiMNlb05MpccC80c_afVoGxDDTx5YtxmN0DPeE-zThkwyQ6uVK0z0hvlcKZJ1hjgyKr_M6CyfWwUjZa4hk6UqPKWLqXB0t5QNce0nq3lu0JABBqrxH6VKxAGvViq9j4RqMW2hjziNLtegQu9nI0d10WrtPsAcLVmq9wLaULzLttPobrsGFgy3XClNcmwIA9uJHLD7UIs933aHYbjd4iC2bY-yMxT7KyXhAJA1l_KEumPH0PJhKDp8rcK_XZM3-5V'
+token_info = sp_oauth.get_access_token(code)
+access_token = token_info['access_token']
+print(access_token)
+
+spotify = SpotifyAPI(CLIENT_ID_SPOTIFY, CLIENT_SECRET_SPOTIFY, REDIRECT_URI_SPOTIFY)
+sp = spotipy.Spotify(access_token)
+results = sp.current_user()
+spotify.sp = sp
+print(sp)
+
 
 activity_type = ActivityType.RUN # will be dynamic value later
 

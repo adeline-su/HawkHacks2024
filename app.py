@@ -33,29 +33,32 @@ sp_oauth = oauth2.SpotifyOAuth( CLIENT_ID_SPOTIFY, CLIENT_SECRET_SPOTIFY,REDIREC
 @app.route('/')
 def index():
 
-    access_token = ""
+    # access_token = ""
 
-    token_info = sp_oauth.get_cached_token()
+    # token_info = sp_oauth.get_cached_token()
 
-    if token_info:
-        print ("Found cached token!")
-        access_token = token_info['access_token']
-    else:
-        url = request.url
-        code = sp_oauth.parse_response_code(url)
-        if code:
-            print ("Found Spotify auth code in Request URL! Trying to get valid access token...")
-            token_info = sp_oauth.get_access_token(code)
-            access_token = token_info['access_token']
-
+    # if token_info:
+    #     print ("Found cached token!")
+    #     access_token = token_info['access_token']
+    # else:
+    #     url = request.url
+    #     code = sp_oauth.parse_response_code(url)
+    #     if code:
+    #         print ("Found Spotify auth code in Request URL! Trying to get valid access token...")
+            
+    #         access_token = token_info['access_token']
+    code = 'AQDXcEcgId827WW9f_yh1uig_Ka47eFu4nz2wfA5sgEioxduqBMKv_gCWt8e3jQ9C_Bm-lnUoIMgH7f27IUV8BTf1DfWErazHsHtWPbYEtwp1xgixIC2JfmD_Nmurj1N7KHsWEKNdyFbbuvy4VW2fiMNlb05MpccC80c_afVoGxDDTx5YtxmN0DPeE-zThkwyQ6uVK0z0hvlcKZJ1hjgyKr_M6CyfWwUjZa4hk6UqPKWLqXB0t5QNce0nq3lu0JABBqrxH6VKxAGvViq9j4RqMW2hjziNLtegQu9nI0d10WrtPsAcLVmq9wLaULzLttPobrsGFgy3XClNcmwIA9uJHLD7UIs933aHYbjd4iC2bY-yMxT7KyXhAJA1l_KEumPH0PJhKDp8rcK_XZM3-5V'
+    token_info = sp_oauth.get_access_token(code)
+    access_token = token_info['access_token']
     if access_token:
         print ("Access token available! Trying to get user information...")
         sp = spotipy.Spotify(access_token)
         results = sp.current_user()
+        spotify.sp = sp
         return results
 
     else:
-        return 'no access token could be gotten'
+        return 'no access token could be found'
 
 
 # strava authentication
