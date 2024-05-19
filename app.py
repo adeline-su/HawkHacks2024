@@ -1,8 +1,9 @@
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, request, jsonify, redirect, session
 from combiner import Combiner
 from cadence import *
 from dotenv import load_dotenv
 from spotify import *
+import urllib.parse
 import os
 
 load_dotenv()
@@ -15,7 +16,7 @@ REDIRECT_URI_SPOTIFY=os.getenv('REDIRECT_URI_SPOTIFY')
 
 strava = StravaAPI(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 spotify = SpotifyAPI(CLIENT_ID_SPOTIFY, CLIENT_SECRET_SPOTIFY, REDIRECT_URI_SPOTIFY)
-spotify.auth()
+# spotify.auth()
 # print(spotify.CLIENT_ID_SPOTIFY, CLIENT_SECRET_SPOTIFY, REDIRECT_URI_SPOTIFY)
 # strava.autheticateAndGetAllActivities()
 # cadence_data = strava.getCadenceData()
@@ -24,7 +25,7 @@ app = Flask(__name__)
 
 REDIRECT_URI_temp = 'https://hawkhacks2024.onrender.com/callback'
 
-#step 2
+# strava authentication
 @app.route('/login')
 def login():
     auth_url = (
@@ -36,22 +37,6 @@ def login():
     )
     return redirect(auth_url)
 
-#step 1
-# @app.route('/loginspotify')
-# def loginspotify():
-#     spotify.auth()
-#     # sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID_SPOTIFY, client_secret=CLIENT_SECRET_SPOTIFY, redirect_uri=REDIRECT_URI_SPOTIFY, scope=spotify.SCOPE))
-#     # spotify.sp = sp
-#     # auth_url = (
-#     #     f'https://www.strava.com/oauth/authorize'
-#     #     f'?client_id={CLIENT_ID}'
-#     #     f'&redirect_uri={REDIRECT_URI_temp}'
-#     #     f'&response_type=code'
-#     #     f'&scope=activity:read_all'
-#     # )
-#     return jsonify('authspotify')
-
-#follows from step 2
 @app.route('/callback')
 def callback():
     print('adeline1')
@@ -74,10 +59,34 @@ def callback():
 
     return jsonify(code)
 
-#will never be called
-# @app.route('/callbackspotify')
-# def callbackspotify():
-#     return jsonify('callbackspotify')
+# spotify authentication
+@app.route('/loginspotify')
+def loginspotify():
+    SCOPE = "user-library-read, user-modify-playback-state, user-read-playback-state, user-top-read, user-read-email, user-read-private, playlist-modify-public, playlist-modify-private"
+    auth_url = f'https://accounts.spotify.com/authorize?response_type=code&client_id={CLIENT_ID_SPOTIFY}&scope={urllib.parse.quote(SCOPE)}&redirect_uri={REDIRECT_URI_SPOTIFY}'
+    return redirect(auth_url)
+
+@app.route('/callbackspotify')
+def callbackspotify():
+    code = request.args.get('code')
+    if not code:
+        return 'Error: Authorization code not received'
+
+    token_data = {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': REDIRECT_URI_SPOTIFY,
+        'client_id': CLIENT_ID_SPOTIFY,
+        'client_secret': CLIENT_SECRET_SPOTIFY
+    }
+    response = requests.post('https://accounts.spotify.com/api/token', data=token_data)
+    if response.status_code == 200:
+        access_token = response.json()['access_token']
+        session['access_token'] = access_token
+        return 'Authentication successful! You can now access the app.'
+    else:
+        return 'Error: Failed to retrieve access token'
+
 
 
 @app.route('/api/demo', methods=['GET'])
