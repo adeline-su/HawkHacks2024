@@ -7,12 +7,12 @@ sample_cadence_data = []
 
 class SpotifyAPI:
     def __init__(self, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI):
-        self.CLIENT_ID="5c17cfd2c3884a6aa0b8d92d21ccf51e"
-        self.CLIENT_SECRET="ce4bd0c559f149aeb281ecfd8d84da9b"
-        self.REDIRECT_URI="http://localhost:3000/callback"
-        # self.CLIENT_ID=CLIENT_ID
-        # self.CLIENT_SECRET=CLIENT_SECRET
-        # self.REDIRECT_URI=REDIRECT_URI
+        # self.CLIENT_ID="5c17cfd2c3884a6aa0b8d92d21ccf51e"
+        # self.CLIENT_SECRET="ce4bd0c559f149aeb281ecfd8d84da9b"
+        # self.REDIRECT_URI="http://localhost:3000/callback"
+        self.CLIENT_ID=CLIENT_ID
+        self.CLIENT_SECRET=CLIENT_SECRET
+        self.REDIRECT_URI=REDIRECT_URI
         self.SCOPE = "user-library-read, user-modify-playback-state, user-read-playback-state, user-top-read, user-read-email, user-read-private, playlist-modify-public, playlist-modify-private"
         self.BPM_UNCERTAINTY = 3
         self.CADENCE_INTERVAL_SEC = 3.43
@@ -38,9 +38,6 @@ class SpotifyAPI:
 
 
     def readDataAndAuthenticate(self, combined_list):
-        # Read JSON file and assign to variable
-        # with open('combined.txt', 'r') as file:
-        #     self.sample_cadence_data = json.load(file)
         self.sample_cadence_data = combined_list
 
         #authenticate
