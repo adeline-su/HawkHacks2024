@@ -36,19 +36,19 @@ def login():
     return redirect(auth_url)
 
 #step 1
-@app.route('/loginspotify')
-def loginspotify():
-    spotify.auth()
-    # sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID_SPOTIFY, client_secret=CLIENT_SECRET_SPOTIFY, redirect_uri=REDIRECT_URI_SPOTIFY, scope=spotify.SCOPE))
-    # spotify.sp = sp
-    # auth_url = (
-    #     f'https://www.strava.com/oauth/authorize'
-    #     f'?client_id={CLIENT_ID}'
-    #     f'&redirect_uri={REDIRECT_URI_temp}'
-    #     f'&response_type=code'
-    #     f'&scope=activity:read_all'
-    # )
-    return jsonify('authspotify')
+# @app.route('/loginspotify')
+# def loginspotify():
+#     spotify.auth()
+#     # sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID_SPOTIFY, client_secret=CLIENT_SECRET_SPOTIFY, redirect_uri=REDIRECT_URI_SPOTIFY, scope=spotify.SCOPE))
+#     # spotify.sp = sp
+#     # auth_url = (
+#     #     f'https://www.strava.com/oauth/authorize'
+#     #     f'?client_id={CLIENT_ID}'
+#     #     f'&redirect_uri={REDIRECT_URI_temp}'
+#     #     f'&response_type=code'
+#     #     f'&scope=activity:read_all'
+#     # )
+#     return jsonify('authspotify')
 
 #follows from step 2
 @app.route('/callback')
@@ -69,9 +69,9 @@ def callback():
     return jsonify(code)
 
 #will never be called
-@app.route('/callbackspotify')
-def callbackspotify():
-    return jsonify('callbackspotify')
+# @app.route('/callbackspotify')
+# def callbackspotify():
+#     return jsonify('callbackspotify')
 
 
 @app.route('/api/demo', methods=['GET'])

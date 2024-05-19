@@ -7,12 +7,12 @@ sample_cadence_data = []
 
 class SpotifyAPI:
     def __init__(self, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI):
-        # self.CLIENT_ID="5c17cfd2c3884a6aa0b8d92d21ccf51e"
-        # self.CLIENT_SECRET="ce4bd0c559f149aeb281ecfd8d84da9b"
-        # self.REDIRECT_URI="http://localhost:3000"
-        self.CLIENT_ID=CLIENT_ID
-        self.CLIENT_SECRET=CLIENT_SECRET
-        self.REDIRECT_URI=REDIRECT_URI
+        self.CLIENT_ID="5c17cfd2c3884a6aa0b8d92d21ccf51e"
+        self.CLIENT_SECRET="ce4bd0c559f149aeb281ecfd8d84da9b"
+        self.REDIRECT_URI="http://localhost:3000/callback"
+        # self.CLIENT_ID=CLIENT_ID
+        # self.CLIENT_SECRET=CLIENT_SECRET
+        # self.REDIRECT_URI=REDIRECT_URI
         self.SCOPE = "user-library-read, user-modify-playback-state, user-read-playback-state, user-top-read, user-read-email, user-read-private, playlist-modify-public, playlist-modify-private"
         self.BPM_UNCERTAINTY = 3
         self.CADENCE_INTERVAL_SEC = 3.43
@@ -44,7 +44,7 @@ class SpotifyAPI:
         self.sample_cadence_data = combined_list
 
         #authenticate
-        # self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, redirect_uri=self.REDIRECT_URI, scope=self.SCOPE))
+        self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, redirect_uri=self.REDIRECT_URI, scope=self.SCOPE))
 
         #populate seed_genre and seed_artist
         self.seed_artist.append(self.sp.current_user_top_artists(limit=1, offset=0, time_range='medium_term')['items'][0]['id'])
